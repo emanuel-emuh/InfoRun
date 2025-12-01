@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Info-Run: Firebase</title>
     <link rel="stylesheet" href="static/css/style.css">
 </head>
-
 <body>
 
     <div class="container">
@@ -45,9 +43,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td colspan="3">Carregando...</td>
-                    </tr>
+                    <tr><td colspan="3">Carregando...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -63,42 +59,130 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 
     <script type="module">
-        // 1. Importa as ferramentas do Firebase (Não mexa aqui) import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"; import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        // ================================================================== // 👇👇👇 ÁREA DE CONFIGURAÇÃO (COLE SEU CÓDIGO AQUI) 👇👇👇 // ================================================================== const firebaseConfig = { apiKey: "COLE_SUA_API_KEY_AQUI",
-        authDomain: "COLE_SEU_AUTH_DOMAIN_AQUI", projectId: "COLE_SEU_PROJECT_ID_AQUI", storageBucket: "COLE_SEU_STORAGE_BUCKET_AQUI", messagingSenderId: "COLE_SEU_SENDER_ID_AQUI", appId: "COLE_SEU_APP_ID_AQUI" }; // 👆👆👆 FIM DA ÁREA DE CONFIGURAÇÃO
-        👆👆👆 // ================================================================== // 2. Inicia o Banco de Dados const app = initializeApp(firebaseConfig); const db = getFirestore(app); // 3. Define o Mês Atual (para filtrar o ranking) const dataHoje
-        = new Date(); const mesAtual = dataHoje.getFullYear() + "-" + String(dataHoje.getMonth() + 1).padStart(2, '0'); // 4. Lógica para LER os dados em Tempo Real const q = query(collection(db, "corridas"), where("data", "==", mesAtual), orderBy("timestamp",
-        "desc")); onSnapshot(q, (snapshot) => { const listaHistorico = document.getElementById('tabelaHistorico').querySelector('tbody'); const listaRanking = document.getElementById('tabelaRanking').querySelector('tbody'); listaHistorico.innerHTML =
-        ""; listaRanking.innerHTML = ""; let totais = {}; // Objeto para somar os KMs de cada um snapshot.forEach((documento) => { const dados = documento.data(); const id = documento.id; // A. Preenche a tabela de Histórico const linhaHistorico = `
-        <tr>
-            <td>${dados.atleta}</td>
-            <td>${dados.km} km</td>
-            <td><button class="btn-delete" data-id="${id}">Excluir</button></td>
-        </tr>
-        `; listaHistorico.innerHTML += linhaHistorico; // B. Soma os KMs para o Ranking if (!totais[dados.atleta]) totais[dados.atleta] = 0; totais[dados.atleta] += dados.km; }); // C. Ordena e Mostra o Ranking const rankingOrdenado = Object.entries(totais).sort((a,
-        b) => b[1] - a[1]); if (rankingOrdenado.length === 0) { listaRanking.innerHTML = "
-        <tr>
-            <td colspan='3' style='text-align:center'>Ninguém correu este mês ainda 😴</td>
-        </tr>"; } else { rankingOrdenado.forEach((item, index) => { const nome = item[0]; const total = item[1].toFixed(2); const medalha = index === 0 ? "👑 " : ""; // Coroa pro primeiro const classe = index === 0 ? "posicao-1" : ""; const linhaRanking =
-        `
-        <tr class="${classe}">
-            <td>#${index + 1}</td>
-            <td>${medalha}${nome}</td>
-            <td>${total} km</td>
-        </tr>
-        `; listaRanking.innerHTML += linhaRanking; }); } // D. Ativa os botões de excluir (Lógica extra para funcionar com type=module) document.querySelectorAll('.btn-delete').forEach(btn => { btn.addEventListener('click', async (e) => { const idParaDeletar
-        = e.target.getAttribute('data-id'); if(confirm("Tem certeza que quer apagar esse registro?")) { await deleteDoc(doc(db, "corridas", idParaDeletar)); } }); }); }); // 5. Lógica para REGISTRAR nova corrida (Botão) document.getElementById('btnRegistrar').addEventListener('click',
-        async () => { const atleta = document.getElementById('atletaInput').value; const km = parseFloat(document.getElementById('kmInput').value); if (!atleta || !km) { alert("Por favor, selecione um atleta e digite os KMs!"); return; } try { await addDoc(collection(db,
-        "corridas"), { atleta: atleta, km: km, data: mesAtual, // Salva o mês atual ("2025-09") timestamp: new Date() // Salva a hora exata }); alert("✅ Corrida registrada com sucesso!"); document.getElementById('kmInput').value = ""; // Limpa o campo
-        } catch (e) { console.error("Erro ao salvar: ", e); alert("Erro ao salvar. Verifique se copiou a Configuração do Firebase certa!"); } });
+        // 1. Importa as ferramentas do Firebase (Não mexa aqui)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ==================================================================
+        // 👇👇👇 ÁREA DE CONFIGURAÇÃO (COLE SEU CÓDIGO AQUI) 👇👇👇
+        // ==================================================================
+        
+        const firebaseConfig = {
+            apiKey: "COLE_SUA_API_KEY_AQUI",
+            authDomain: "COLE_SEU_AUTH_DOMAIN_AQUI",
+            projectId: "COLE_SEU_PROJECT_ID_AQUI",
+            storageBucket: "COLE_SEU_STORAGE_BUCKET_AQUI",
+            messagingSenderId: "COLE_SEU_SENDER_ID_AQUI",
+            appId: "COLE_SEU_APP_ID_AQUI"
+        };
+
+        // 👆👆👆 FIM DA ÁREA DE CONFIGURAÇÃO 👆👆👆
+        // ==================================================================
+
+        // 2. Inicia o Banco de Dados
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 3. Define o Mês Atual (para filtrar o ranking)
+        const dataHoje = new Date();
+        const mesAtual = dataHoje.getFullYear() + "-" + String(dataHoje.getMonth() + 1).padStart(2, '0');
+
+        // 4. Lógica para LER os dados em Tempo Real
+        const q = query(collection(db, "corridas"), where("data", "==", mesAtual), orderBy("timestamp", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const listaHistorico = document.getElementById('tabelaHistorico').querySelector('tbody');
+            const listaRanking = document.getElementById('tabelaRanking').querySelector('tbody');
+            
+            listaHistorico.innerHTML = "";
+            listaRanking.innerHTML = "";
+
+            let totais = {}; // Objeto para somar os KMs de cada um
+
+            snapshot.forEach((documento) => {
+                const dados = documento.data();
+                const id = documento.id;
+                
+                // A. Preenche a tabela de Histórico
+                const linhaHistorico = `
+                    <tr>
+                        <td>${dados.atleta}</td>
+                        <td>${dados.km} km</td>
+                        <td><button class="btn-delete" data-id="${id}">Excluir</button></td>
+                    </tr>
+                `;
+                listaHistorico.innerHTML += linhaHistorico;
+
+                // B. Soma os KMs para o Ranking
+                if (!totais[dados.atleta]) totais[dados.atleta] = 0;
+                totais[dados.atleta] += dados.km;
+            });
+
+            // C. Ordena e Mostra o Ranking
+            const rankingOrdenado = Object.entries(totais).sort((a, b) => b[1] - a[1]);
+
+            if (rankingOrdenado.length === 0) {
+                listaRanking.innerHTML = "<tr><td colspan='3' style='text-align:center'>Ninguém correu este mês ainda 😴</td></tr>";
+            } else {
+                rankingOrdenado.forEach((item, index) => {
+                    const nome = item[0];
+                    const total = item[1].toFixed(2);
+                    const medalha = index === 0 ? "👑 " : ""; // Coroa pro primeiro
+                    const classe = index === 0 ? "posicao-1" : "";
+                    
+                    const linhaRanking = `
+                        <tr class="${classe}">
+                            <td>#${index + 1}</td>
+                            <td>${medalha}${nome}</td>
+                            <td>${total} km</td>
+                        </tr>
+                    `;
+                    listaRanking.innerHTML += linhaRanking;
+                });
+            }
+
+            // D. Ativa os botões de excluir (Lógica extra para funcionar com type=module)
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const idParaDeletar = e.target.getAttribute('data-id');
+                    if(confirm("Tem certeza que quer apagar esse registro?")) {
+                        await deleteDoc(doc(db, "corridas", idParaDeletar));
+                    }
+                });
+            });
+        });
+
+        // 5. Lógica para REGISTRAR nova corrida (Botão)
+        document.getElementById('btnRegistrar').addEventListener('click', async () => {
+            const atleta = document.getElementById('atletaInput').value;
+            const km = parseFloat(document.getElementById('kmInput').value);
+
+            if (!atleta || !km) { 
+                alert("Por favor, selecione um atleta e digite os KMs!"); 
+                return; 
+            }
+
+            try {
+                await addDoc(collection(db, "corridas"), {
+                    atleta: atleta,
+                    km: km,
+                    data: mesAtual, // Salva o mês atual ("2025-09")
+                    timestamp: new Date() // Salva a hora exata
+                });
+                alert("✅ Corrida registrada com sucesso!");
+                document.getElementById('kmInput').value = ""; // Limpa o campo
+            } catch (e) {
+                console.error("Erro ao salvar: ", e);
+                alert("Erro ao salvar. Verifique se copiou a Configuração do Firebase certa!");
+            }
+        });
 
     </script>
 </body>
-
 </html>
