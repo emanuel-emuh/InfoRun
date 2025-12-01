@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info-Run: Ranking Mensal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🏃 Info-Run</h1>
+            <p>Competição Mensal de KMs</p>
+        </header>
+
+        <div class="card registro-box">
+            <h3>Registrar Nova Corrida</h3>
+            <form action="/registrar" method="POST">
+                <div class="form-group">
+                    <select name="atleta" required>
+                        <option value="" disabled selected>Selecione o Atleta</option>
+                        <option value="Atleta 1">Atleta 1</option>
+                        <option value="Atleta 2">Atleta 2</option>
+                        <option value="Atleta 3">Atleta 3</option>
+                        <option value="Atleta 4">Atleta 4</option>
+                        <option value="Atleta 5">Atleta 5</option>
+                        <option value="Atleta 6">Atleta 6</option>
+                        <option value="Atleta 7">Atleta 7</option>
+                    </select>
+                    <input type="number" step="0.01" name="km" placeholder="Distância (KM)" required>
+                </div>
+                <button type="submit">Registrar KM</button>
+            </form>
+        </div>
+
+        <div class="card ranking-box">
+            <h3>🏆 Ranking do Mês</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="15%">Pos.</th>
+                        <th>Atleta</th>
+                        <th width="25%">Total KM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in ranking %}
+                    <tr class="posicao-{{ loop.index }}">
+                        <td>#{{ loop.index }}</td>
+                        <td>{{ linha[0] }}</td>
+                        <td><strong>{{ "%.2f"|format(linha[1]) }} km</strong></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="color: #777;">Nenhuma corrida registrada neste mês ainda.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
