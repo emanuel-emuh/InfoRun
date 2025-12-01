@@ -123,9 +123,13 @@
         // 5. Lógica para REGISTRAR nova corrida
         document.getElementById('btnRegistrar').addEventListener('click', async () => {
             const atleta = document.getElementById('atletaInput').value;
-            const km = parseFloat(document.getElementById('kmInput').value);
+            // Pegamos o valor cru (texto) para verificar se está vazio
+            const valorInput = document.getElementById('kmInput').value;
+            const km = parseFloat(valorInput);
 
-            if (!atleta || !km) { 
+            // CORREÇÃO AQUI:
+            // Verificamos se o atleta está vazio OU se o campo KM está vazio
+            if (!atleta || valorInput === "") { 
                 alert("Por favor, selecione um atleta e digite os KMs!"); 
                 return; 
             }
