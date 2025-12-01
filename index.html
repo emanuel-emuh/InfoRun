@@ -11,6 +11,7 @@
     <div class="container">
         <header>
             <h1>🏃 Info-Run</h1>
+            <p>Conectado ao Firebase 🔥</p>
         </header>
 
         <div class="card">
@@ -64,32 +65,30 @@
     </div>
 
     <script type="module">
-        // 1. Importa as ferramentas do Firebase (Não mexa aqui)
+        // 1. Importa as ferramentas do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ==================================================================
-        // 👇👇👇 ÁREA DE CONFIGURAÇÃO (COLE SEU CÓDIGO AQUI) 👇👇👇
+        // CONFIGURAÇÃO JÁ PREENCHIDA COM SEUS DADOS
         // ==================================================================
         
         const firebaseConfig = {
-            apiKey: "AIzaSyAQA-fQCt3y6K-TYhKqJUNPH1ZMmeqaJa4",
+            apiKey: "AIzaSyAQp-fQCt3y6K-TYhKqJUNPH1ZMmeqaJa4",
             authDomain: "info-run-ca27e.firebaseapp.com",
             projectId: "info-run-ca27e",
             storageBucket: "info-run-ca27e.firebasestorage.app",
             messagingSenderId: "183190789446",
             appId: "1:183190789446:web:41470996258c4b8afb9947"
         };
-        };
 
-        // 👆👆👆 FIM DA ÁREA DE CONFIGURAÇÃO 👆👆👆
         // ==================================================================
 
         // 2. Inicia o Banco de Dados
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 3. Define o Mês Atual (para filtrar o ranking)
+        // 3. Define o Mês Atual
         const dataHoje = new Date();
         const mesAtual = dataHoje.getFullYear() + "-" + String(dataHoje.getMonth() + 1).padStart(2, '0');
 
@@ -103,7 +102,7 @@
             listaHistorico.innerHTML = "";
             listaRanking.innerHTML = "";
 
-            let totais = {}; // Objeto para somar os KMs de cada um
+            let totais = {}; 
 
             snapshot.forEach((documento) => {
                 const dados = documento.data();
@@ -133,7 +132,7 @@
                 rankingOrdenado.forEach((item, index) => {
                     const nome = item[0];
                     const total = item[1].toFixed(2);
-                    const medalha = index === 0 ? "👑 " : ""; // Coroa pro primeiro
+                    const medalha = index === 0 ? "👑 " : ""; 
                     const classe = index === 0 ? "posicao-1" : "";
                     
                     const linhaRanking = `
@@ -147,7 +146,7 @@
                 });
             }
 
-            // D. Ativa os botões de excluir (Lógica extra para funcionar com type=module)
+            // D. Ativa os botões de excluir
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const idParaDeletar = e.target.getAttribute('data-id');
@@ -158,7 +157,7 @@
             });
         });
 
-        // 5. Lógica para REGISTRAR nova corrida (Botão)
+        // 5. Lógica para REGISTRAR nova corrida
         document.getElementById('btnRegistrar').addEventListener('click', async () => {
             const atleta = document.getElementById('atletaInput').value;
             const km = parseFloat(document.getElementById('kmInput').value);
@@ -172,14 +171,14 @@
                 await addDoc(collection(db, "corridas"), {
                     atleta: atleta,
                     km: km,
-                    data: mesAtual, // Salva o mês atual ("2025-09")
-                    timestamp: new Date() // Salva a hora exata
+                    data: mesAtual,
+                    timestamp: new Date()
                 });
                 alert("✅ Corrida registrada com sucesso!");
-                document.getElementById('kmInput').value = ""; // Limpa o campo
+                document.getElementById('kmInput').value = ""; 
             } catch (e) {
                 console.error("Erro ao salvar: ", e);
-                alert("Erro ao salvar. Verifique se copiou a Configuração do Firebase certa!");
+                alert("Erro ao salvar! Verifique o Console (F12).");
             }
         });
 
