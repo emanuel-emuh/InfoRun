@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Info-Run: Corridão</title>
+    <title>Info-Run: Mural</title>
     <link rel="stylesheet" href="static/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -12,6 +12,7 @@
     <div class="container">
         <header>
             <h1>🏃 Info-Run</h1>
+            <p>Conectado ao Firebase 🔥</p>
         </header>
 
         <div id="boxRecordista" class="destaque-dia" style="display: none;">
@@ -42,21 +43,37 @@
             <div class="form-group">
                 <select id="atletaInput">
                     <option value="" disabled selected>Selecionar Atleta...</option>
-                    <option value="Pjr">Pjr⚡ </option>
-                    <option value="PL">PL🐊​</option>
-                    <option value="Saulo">Saulo🔥</option>
-                    <option value="Gustavo">Gustavo🍺</option>
-                    <option value="Matheus">Matheus🦄​</option>
-                    <option value="Gabriel">Gabriel💅</option>
-                    <option value="Emuh">Emuh💢</option>
-                    <option value="Maumau">Maumau😈</option>
-                    <option value="Yago">Yago​🐢​</option>
+                    <option value="Pjr">Pjr</option>
+                    <option value="PL">PL</option>
+                    <option value="Saulo">Saulo</option>
+                    <option value="Gustavo">Gustavo</option>
+                    <option value="Matheus">Matheus</option>
+                    <option value="Gabriel">Gabriel</option>
+                    <option value="Emuh">Emuh</option>
+                    <option value="Maumau">Maumau</option>
+                    <option value="Yago">Yago</option>
                 </select>
                 <input type="number" step="0.01" id="kmInput" placeholder="Distância (KM)">
             </div>
-
-
             <button id="btnRegistrar" class="btn-registrar">🚀 Registrar KM</button>
+        </div>
+
+        <div class="card">
+            <h3>💬 Mural da Galera</h3>
+            
+            <div id="boxMensagens" class="mural-container">
+                <div style="text-align:center; color:#666; font-size:0.9rem; padding:20px;">
+                    Carregando mensagens...
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                <input type="text" id="inputMsg" placeholder="Digite uma mensagem..." maxlength="140">
+                <button id="btnEnviarMsg" class="btn-enviar-msg">ENVIAR MENSAGEM 📨</button>
+                <p style="font-size: 0.75rem; color: #666; margin-top: 5px; text-align: center;">
+                    *Selecione seu nome lá em cima antes de enviar.
+                </p>
+            </div>
         </div>
 
         <div class="card">
@@ -78,10 +95,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // ADICIONADO "limit" nos imports
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ==================================================================
-        // SUA CONFIGURAÇÃO DO FIREBASE (JÁ INCLUÍDA)
+        // SUA CONFIGURAÇÃO
         // ==================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAQp-fQCt3y6K-TYhKqJUNPH1ZMmeqaJa4",
@@ -102,18 +120,17 @@
         const dataHojeObj = new Date();
         const mesAtual = dataHojeObj.getFullYear() + "-" + String(dataHojeObj.getMonth() + 1).padStart(2, '0');
         const diaHojeString = dataHojeObj.toDateString(); 
-        const diaHojeNumero = dataHojeObj.getDate(); // Ex: 1, 2, 15...
+        const diaHojeNumero = dataHojeObj.getDate(); 
 
-        // Variável global para o Gráfico (para poder atualizar/destruir)
         let chartInstance = null;
 
-        // CORES PARA OS ATLETAS (Adicionei cores neon para combinar com o tema)
         const coresAtletas = {
             "Pjr": "#FF5733", "PL": "#33FF57", "Saulo": "#3357FF", 
             "Gustavo": "#FF33F6", "Matheus": "#33FFF6", "Gabriel": "#F6FF33",
             "Emuh": "#FF8C33", "Maumau": "#9d4edd", "Yago": "#ffffff"
         };
 
+        // --- 1. LÓGICA DO RANKING E GRÁFICO ---
         const q = query(collection(db, "corridas"), where("data", "==", mesAtual), orderBy("timestamp", "asc"));
         
         onSnapshot(q, (snapshot) => {
@@ -123,45 +140,33 @@
             let somaGrupo = 0;
             let melhorDoDia = { nome: "", km: 0 };
             
-            // Estrutura para o Gráfico: { "Emuh": [0, 5, 5, 10...], "PL": [0, 0, 2...] }
             let dadosDiarios = {};
-            // Cria array vazio de dias para cada atleta cadastrado no select
             const opcoesSelect = document.getElementById('atletaInput').options;
             for (let i = 0; i < opcoesSelect.length; i++) {
-                if(opcoesSelect[i].value) {
-                    dadosDiarios[opcoesSelect[i].value] = new Array(diaHojeNumero + 1).fill(0);
-                }
+                if(opcoesSelect[i].value) dadosDiarios[opcoesSelect[i].value] = new Array(diaHojeNumero + 1).fill(0);
             }
 
             snapshot.forEach((documento) => {
                 const dados = documento.data();
-                
-                // 1. Soma Totais (Ranking e Meta)
                 if (!totais[dados.atleta]) totais[dados.atleta] = 0;
                 totais[dados.atleta] += dados.km;
                 somaGrupo += dados.km;
 
-                // 2. Recordista do Dia
                 if (dados.timestamp) {
                     const dataObj = dados.timestamp.toDate();
                     const dataCorrida = dataObj.toDateString();
                     const diaCorrida = dataObj.getDate();
 
                     if (dataCorrida === diaHojeString) {
-                        if (dados.km > melhorDoDia.km) {
-                            melhorDoDia = { nome: dados.atleta, km: dados.km };
-                        }
+                        if (dados.km > melhorDoDia.km) melhorDoDia = { nome: dados.atleta, km: dados.km };
                     }
-
-                    // 3. Prepara dados do Gráfico
-                    // Se a corrida foi até hoje, soma no dia correspondente
                     if (diaCorrida <= diaHojeNumero && dadosDiarios[dados.atleta]) {
                         dadosDiarios[dados.atleta][diaCorrida] += dados.km;
                     }
                 }
             });
 
-            // --- ATUALIZA META E RECORDISTA ---
+            // ATUALIZA VISUAL
             const porcentagem = (somaGrupo / META_MENSAL) * 100;
             document.getElementById('barraProgresso').style.width = (porcentagem > 100 ? 100 : porcentagem) + "%";
             document.getElementById('txtMeta').innerText = `${somaGrupo.toFixed(1)} / ${META_MENSAL} km`;
@@ -175,7 +180,6 @@
                 boxRecordista.style.display = "none"; 
             }
 
-            // --- ATUALIZA RANKING ---
             listaRanking.innerHTML = "";
             const rankingOrdenado = Object.entries(totais).sort((a, b) => b[1] - a[1]);
 
@@ -187,102 +191,121 @@
                     const total = item[1].toFixed(2);
                     const medalha = index === 0 ? "🥇 " : (index === 1 ? "🥈 " : (index === 2 ? "🥉 " : ""));
                     const classe = index === 0 ? "posicao-1" : "";
-                    
-                    const linhaRanking = `<tr class="${classe}"><td>#${index + 1}</td><td>${medalha}${nome}</td><td>${total} km</td></tr>`;
-                    listaRanking.innerHTML += linhaRanking;
+                    listaRanking.innerHTML += `<tr class="${classe}"><td>#${index + 1}</td><td>${medalha}${nome}</td><td>${total} km</td></tr>`;
                 });
             }
-
-            // --- GERA O GRÁFICO ---
             atualizarGrafico(dadosDiarios);
         });
 
-        function atualizarGrafico(dadosBrutos) {
-            // 1. Cria os labels (Dias 1, 2, 3... até Hoje)
-            const labels = [];
-            for(let i = 1; i <= diaHojeNumero; i++) labels.push(`Dia ${i}`);
+        // --- 2. LÓGICA DO MURAL (NOVO) ---
+        // Pega as últimas 20 mensagens, ordenadas da mais nova para mais antiga
+        const qMural = query(collection(db, "mural"), orderBy("timestamp", "desc"), limit(20));
 
-            // 2. Transforma os dados diários em ACUMULADOS
-            // Ex: Dia 1 (5km), Dia 2 (0km) -> Vira: Dia 1 (5km), Dia 2 (5km)
-            const datasets = [];
-            
-            for (const [atleta, corridasPorDia] of Object.entries(dadosBrutos)) {
-                let acumulado = 0;
-                let dadosAcumulados = [];
-                let correuNoMes = false;
+        onSnapshot(qMural, (snapshot) => {
+            const box = document.getElementById('boxMensagens');
+            box.innerHTML = ""; // Limpa para não duplicar
 
-                // Começa do dia 1 (ignora o índice 0)
-                for(let i = 1; i <= diaHojeNumero; i++) {
-                    acumulado += corridasPorDia[i];
-                    dadosAcumulados.push(acumulado);
-                    if(acumulado > 0) correuNoMes = true;
-                }
-
-                // Só mostra no gráfico quem já correu
-                if(correuNoMes) {
-                    datasets.push({
-                        label: atleta,
-                        data: dadosAcumulados,
-                        borderColor: coresAtletas[atleta] || "#999", // Cor fixa ou cinza
-                        backgroundColor: coresAtletas[atleta] || "#999",
-                        borderWidth: 2,
-                        tension: 0.3, // Deixa a linha curva
-                        pointRadius: 3
-                    });
-                }
+            if (snapshot.empty) {
+                box.innerHTML = "<div style='text-align:center; color:#666; padding:20px;'>Seja o primeiro a mandar um recado! 👋</div>";
+                return;
             }
 
-            // 3. Renderiza o Chart.js
-            const ctx = document.getElementById('graficoEvolucao');
-            
-            // Se já existe gráfico, destroi antes de criar novo (pra não bugar)
-            if (chartInstance) chartInstance.destroy();
-
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: { labels: labels, datasets: datasets },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#fff' } } // Legenda branca
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: '#444' }, // Grade escura
-                            ticks: { color: '#ccc' }
-                        },
-                        x: {
-                            grid: { color: '#444' },
-                            ticks: { color: '#ccc' }
-                        }
-                    }
+            snapshot.forEach((doc) => {
+                const msg = doc.data();
+                
+                // Formata a hora (Ex: 14:30)
+                let horaFormatada = "--:--";
+                if(msg.timestamp) {
+                    const dataMsg = msg.timestamp.toDate();
+                    horaFormatada = dataMsg.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 }
-            });
-        }
 
-        // Registrar
+                // Cria o HTML da mensagem
+                const htmlMsg = `
+                    <div class="msg-card">
+                        <div class="msg-header">
+                            <span class="msg-autor">${msg.atleta}</span>
+                            <span>${horaFormatada}</span>
+                        </div>
+                        <div class="msg-texto">${msg.texto}</div>
+                    </div>
+                `;
+                box.innerHTML += htmlMsg;
+            });
+        });
+
+        // --- 3. EVENTO: ENVIAR MENSAGEM ---
+        document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
+            const atleta = document.getElementById('atletaInput').value;
+            const texto = document.getElementById('inputMsg').value;
+
+            if (!atleta) { alert("⚠️ Selecione seu nome no campo lá em cima (Registrar) para sabermos quem é você!"); return; }
+            if (!texto) { alert("⚠️ Escreva alguma coisa!"); return; }
+
+            try {
+                // Efeito visual no botão
+                const btn = document.getElementById('btnEnviarMsg');
+                btn.innerText = "Enviando...";
+                
+                await addDoc(collection(db, "mural"), {
+                    atleta: atleta,
+                    texto: texto,
+                    timestamp: new Date()
+                });
+                
+                // Limpa e reseta
+                document.getElementById('inputMsg').value = "";
+                btn.innerText = "ENVIAR MENSAGEM 📨";
+                
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao enviar mensagem.");
+            }
+        });
+
+
+        // --- 4. EVENTO: REGISTRAR CORRIDA ---
         document.getElementById('btnRegistrar').addEventListener('click', async () => {
             const atleta = document.getElementById('atletaInput').value;
             const valorInput = document.getElementById('kmInput').value;
             const km = parseFloat(valorInput);
 
-            if (!atleta || valorInput === "") { 
-                alert("Selecione um atleta e digite os KMs!"); return; 
-            }
-
+            if (!atleta || valorInput === "") { alert("Selecione um atleta e digite os KMs!"); return; }
             try {
-                await addDoc(collection(db, "corridas"), {
-                    atleta: atleta, km: km, data: mesAtual, timestamp: new Date()
-                });
-                alert("✅ Registrado!");
-                document.getElementById('kmInput').value = ""; 
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao salvar.");
-            }
+                await addDoc(collection(db, "corridas"), { atleta: atleta, km: km, data: mesAtual, timestamp: new Date() });
+                alert("✅ Registrado!"); document.getElementById('kmInput').value = ""; 
+            } catch (e) { console.error(e); alert("Erro ao salvar."); }
         });
+
+        // Função do Gráfico
+        function atualizarGrafico(dadosBrutos) {
+            const labels = [];
+            for(let i = 1; i <= diaHojeNumero; i++) labels.push(`Dia ${i}`);
+            const datasets = [];
+            for (const [atleta, corridasPorDia] of Object.entries(dadosBrutos)) {
+                let acumulado = 0;
+                let dadosAcumulados = [];
+                let correuNoMes = false;
+                for(let i = 1; i <= diaHojeNumero; i++) {
+                    acumulado += corridasPorDia[i];
+                    dadosAcumulados.push(acumulado);
+                    if(acumulado > 0) correuNoMes = true;
+                }
+                if(correuNoMes) {
+                    datasets.push({
+                        label: atleta, data: dadosAcumulados,
+                        borderColor: coresAtletas[atleta] || "#999", backgroundColor: coresAtletas[atleta] || "#999",
+                        borderWidth: 2, tension: 0.3, pointRadius: 3
+                    });
+                }
+            }
+            const ctx = document.getElementById('graficoEvolucao');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'line', data: { labels: labels, datasets: datasets },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { beginAtZero: true, grid: { color: '#444' }, ticks: { color: '#ccc' } }, x: { grid: { color: '#444' }, ticks: { color: '#ccc' } } } }
+            });
+        }
     </script>
 </body>
 </html>
