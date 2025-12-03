@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Info-Run: Mural</title>
+    <title>Info-Run: Dashboard</title>
     <link rel="stylesheet" href="static/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -15,87 +15,91 @@
             <p>Conectado ao Firebase 🔥</p>
         </header>
 
-        <div id="boxRecordista" class="destaque-dia" style="display: none;">
-            <div class="destaque-titulo">🔥 Recordista de Hoje</div>
-            <div id="txtRecordista" class="destaque-nome">--</div>
-            <div id="txtRecordistaKm" style="font-size: 1rem;">0 km</div>
-        </div>
+        <div class="dashboard-grid">
 
-        <div class="meta-box">
-            <div class="meta-texto">
-                <span>Progresso do Grupo</span>
-                <span id="txtMeta">0 / 500 km</span>
-            </div>
-            <div class="progress-container">
-                <div id="barraProgresso" class="progress-bar"></div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>📈 Evolução Mensal</h3>
-            <div style="position: relative; height: 300px; width: 100%;">
-                <canvas id="graficoEvolucao"></canvas>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>Registrar Nova Corrida</h3>
-            <div class="form-group">
-                <select id="atletaInput">
-                    <option value="" disabled selected>Selecionar Atleta...</option>
-                    <option value="Pjr">Pjr</option>
-                    <option value="PL">PL</option>
-                    <option value="Saulo">Saulo</option>
-                    <option value="Gustavo">Gustavo</option>
-                    <option value="Matheus">Matheus</option>
-                    <option value="Gabriel">Gabriel</option>
-                    <option value="Emuh">Emuh</option>
-                    <option value="Maumau">Maumau</option>
-                    <option value="Yago">Yago</option>
-                </select>
-                <input type="number" step="0.01" id="kmInput" placeholder="Distância (KM)">
-            </div>
-            <button id="btnRegistrar" class="btn-registrar">🚀 Registrar KM</button>
-        </div>
-
-        <div class="card">
-            <h3>💬 Mural da Galera</h3>
-            
-            <div id="boxMensagens" class="mural-container">
-                <div style="text-align:center; color:#666; font-size:0.9rem; padding:20px;">
-                    Carregando mensagens...
+            <div class="top-row">
+                <div id="boxRecordista" class="destaque-dia" style="display: none;">
+                    <div class="destaque-titulo">🔥 Recordista de Hoje</div>
+                    <div id="txtRecordista" class="destaque-nome">--</div>
+                    <div id="txtRecordistaKm" style="font-size: 1rem;">0 km</div>
+                </div>
+                <div class="meta-box">
+                    <div class="meta-texto">
+                        <span>Progresso do Grupo</span>
+                        <span id="txtMeta">0 / 500 km</span>
+                    </div>
+                    <div class="progress-container">
+                        <div id="barraProgresso" class="progress-bar"></div>
+                    </div>
                 </div>
             </div>
 
-            <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
-                <input type="text" id="inputMsg" placeholder="Digite uma mensagem..." maxlength="140">
-                <button id="btnEnviarMsg" class="btn-enviar-msg">ENVIAR MENSAGEM 📨</button>
-                <p style="font-size: 0.75rem; color: #666; margin-top: 5px; text-align: center;">
-                    *Selecione seu nome lá em cima antes de enviar.
-                </p>
-            </div>
-        </div>
+            <div class="left-col">
+                <div class="card">
+                    <h3>Registrar Nova Corrida</h3>
+                    <div class="form-group">
+                        <select id="atletaInput">
+                            <option value="" disabled selected>Selecionar Atleta...</option>
+                            <option value="Pjr">Pjr</option>
+                            <option value="PL">PL</option>
+                            <option value="Saulo">Saulo</option>
+                            <option value="Gustavo">Gustavo</option>
+                            <option value="Matheus">Matheus</option>
+                            <option value="Gabriel">Gabriel</option>
+                            <option value="Emuh">Emuh</option>
+                            <option value="Maumau">Maumau</option>
+                            <option value="Yago">Yago</option>
+                        </select>
+                        <input type="number" step="0.01" id="kmInput" placeholder="Distância (KM)">
+                    </div>
+                    <button id="btnRegistrar" class="btn-registrar">🚀 Registrar KM</button>
+                </div>
 
-        <div class="card">
-            <h3>🏆 Ranking do Mês</h3>
-            <table id="tabelaRanking">
-                <thead>
-                    <tr>
-                        <th width="15%">Pos</th>
-                        <th>Atleta</th>
-                        <th width="30%">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="3">Carregando...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+                <div class="card">
+                    <h3>💬 Mural da Galera</h3>
+                    <div id="boxMensagens" class="mural-container">
+                        <div style="text-align:center; color:#666; font-size:0.8rem; padding:20px;">
+                            Carregando...
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 10px;">
+                        <input type="text" id="inputMsg" placeholder="Mensagem..." maxlength="140">
+                        <button id="btnEnviarMsg" class="btn-enviar-msg">ENVIAR 📨</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                
+                <div class="card" style="border: 2px solid #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);">
+                    <h3>🏆 Ranking do Mês</h3>
+                    <table id="tabelaRanking">
+                        <thead>
+                            <tr>
+                                <th width="15%">Pos</th>
+                                <th>Atleta</th>
+                                <th width="30%">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="3">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>📈 Evolução Mensal</h3>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="graficoEvolucao"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+        </div> </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        // ADICIONADO "limit" nos imports
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ==================================================================
@@ -113,7 +117,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         const META_MENSAL = 500; 
 
         // Datas
@@ -123,25 +126,23 @@
         const diaHojeNumero = dataHojeObj.getDate(); 
 
         let chartInstance = null;
-
         const coresAtletas = {
             "Pjr": "#FF5733", "PL": "#33FF57", "Saulo": "#3357FF", 
             "Gustavo": "#FF33F6", "Matheus": "#33FFF6", "Gabriel": "#F6FF33",
             "Emuh": "#FF8C33", "Maumau": "#9d4edd", "Yago": "#ffffff"
         };
 
-        // --- 1. LÓGICA DO RANKING E GRÁFICO ---
+        // 1. DADOS DE CORRIDAS
         const q = query(collection(db, "corridas"), where("data", "==", mesAtual), orderBy("timestamp", "asc"));
         
         onSnapshot(q, (snapshot) => {
             const listaRanking = document.getElementById('tabelaRanking').querySelector('tbody');
-            
             let totais = {}; 
             let somaGrupo = 0;
             let melhorDoDia = { nome: "", km: 0 };
-            
             let dadosDiarios = {};
             const opcoesSelect = document.getElementById('atletaInput').options;
+            
             for (let i = 0; i < opcoesSelect.length; i++) {
                 if(opcoesSelect[i].value) dadosDiarios[opcoesSelect[i].value] = new Array(diaHojeNumero + 1).fill(0);
             }
@@ -166,7 +167,7 @@
                 }
             });
 
-            // ATUALIZA VISUAL
+            // Meta e Recordista
             const porcentagem = (somaGrupo / META_MENSAL) * 100;
             document.getElementById('barraProgresso').style.width = (porcentagem > 100 ? 100 : porcentagem) + "%";
             document.getElementById('txtMeta').innerText = `${somaGrupo.toFixed(1)} / ${META_MENSAL} km`;
@@ -180,6 +181,7 @@
                 boxRecordista.style.display = "none"; 
             }
 
+            // Ranking
             listaRanking.innerHTML = "";
             const rankingOrdenado = Object.entries(totais).sort((a, b) => b[1] - a[1]);
 
@@ -197,87 +199,52 @@
             atualizarGrafico(dadosDiarios);
         });
 
-        // --- 2. LÓGICA DO MURAL (NOVO) ---
-        // Pega as últimas 20 mensagens, ordenadas da mais nova para mais antiga
+        // 2. MURAL
         const qMural = query(collection(db, "mural"), orderBy("timestamp", "desc"), limit(20));
-
         onSnapshot(qMural, (snapshot) => {
             const box = document.getElementById('boxMensagens');
-            box.innerHTML = ""; // Limpa para não duplicar
-
-            if (snapshot.empty) {
-                box.innerHTML = "<div style='text-align:center; color:#666; padding:20px;'>Seja o primeiro a mandar um recado! 👋</div>";
-                return;
-            }
+            box.innerHTML = ""; 
+            if (snapshot.empty) { box.innerHTML = "<div style='text-align:center;color:#666;font-size:0.8rem;padding:20px;'>Mural vazio...</div>"; return; }
 
             snapshot.forEach((doc) => {
                 const msg = doc.data();
-                
-                // Formata a hora (Ex: 14:30)
-                let horaFormatada = "--:--";
-                if(msg.timestamp) {
-                    const dataMsg = msg.timestamp.toDate();
-                    horaFormatada = dataMsg.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                }
+                let hora = "--:--";
+                if(msg.timestamp) hora = msg.timestamp.toDate().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-                // Cria o HTML da mensagem
-                const htmlMsg = `
+                box.innerHTML += `
                     <div class="msg-card">
-                        <div class="msg-header">
-                            <span class="msg-autor">${msg.atleta}</span>
-                            <span>${horaFormatada}</span>
-                        </div>
+                        <div class="msg-header"><span class="msg-autor">${msg.atleta}</span><span>${hora}</span></div>
                         <div class="msg-texto">${msg.texto}</div>
                     </div>
                 `;
-                box.innerHTML += htmlMsg;
             });
         });
 
-        // --- 3. EVENTO: ENVIAR MENSAGEM ---
+        // 3. EVENTOS
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const atleta = document.getElementById('atletaInput').value;
             const texto = document.getElementById('inputMsg').value;
-
-            if (!atleta) { alert("⚠️ Selecione seu nome no campo lá em cima (Registrar) para sabermos quem é você!"); return; }
-            if (!texto) { alert("⚠️ Escreva alguma coisa!"); return; }
-
+            if (!atleta) { alert("Selecione seu nome lá em cima!"); return; }
+            if (!texto) return;
             try {
-                // Efeito visual no botão
-                const btn = document.getElementById('btnEnviarMsg');
-                btn.innerText = "Enviando...";
-                
-                await addDoc(collection(db, "mural"), {
-                    atleta: atleta,
-                    texto: texto,
-                    timestamp: new Date()
-                });
-                
-                // Limpa e reseta
+                document.getElementById('btnEnviarMsg').innerText = "...";
+                await addDoc(collection(db, "mural"), { atleta, texto, timestamp: new Date() });
                 document.getElementById('inputMsg').value = "";
-                btn.innerText = "ENVIAR MENSAGEM 📨";
-                
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao enviar mensagem.");
-            }
+                document.getElementById('btnEnviarMsg').innerText = "ENVIAR 📨";
+            } catch (e) { console.error(e); }
         });
 
-
-        // --- 4. EVENTO: REGISTRAR CORRIDA ---
         document.getElementById('btnRegistrar').addEventListener('click', async () => {
             const atleta = document.getElementById('atletaInput').value;
             const valorInput = document.getElementById('kmInput').value;
             const km = parseFloat(valorInput);
-
-            if (!atleta || valorInput === "") { alert("Selecione um atleta e digite os KMs!"); return; }
+            if (!atleta || valorInput === "") { alert("Preencha tudo!"); return; }
             try {
-                await addDoc(collection(db, "corridas"), { atleta: atleta, km: km, data: mesAtual, timestamp: new Date() });
+                await addDoc(collection(db, "corridas"), { atleta, km, data: mesAtual, timestamp: new Date() });
                 alert("✅ Registrado!"); document.getElementById('kmInput').value = ""; 
             } catch (e) { console.error(e); alert("Erro ao salvar."); }
         });
 
-        // Função do Gráfico
         function atualizarGrafico(dadosBrutos) {
             const labels = [];
             for(let i = 1; i <= diaHojeNumero; i++) labels.push(`Dia ${i}`);

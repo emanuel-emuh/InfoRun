@@ -1,8 +1,8 @@
 /* =========================================
-   INFO-RUN: TEMA DARK CYBERPUNK (FINAL + CHAT)
+   INFO-RUN: TEMA DARK CYBERPUNK (DASHBOARD)
    ========================================= */
 
-/* 1. CONFIGURAÇÕES GERAIS */
+/* --- 1. GERAL --- */
 * {
     margin: 0;
     padding: 0;
@@ -14,22 +14,23 @@ body {
     background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
     background-attachment: fixed;
     color: #e0e0e0;
-    display: flex;
-    justify-content: center;
     min-height: 100vh;
-    padding: 40px 10px;
+    padding: 20px;
+    display: block;
+    /* Mudamos para block para o dashboard fluir melhor */
 }
 
 .container {
     width: 100%;
-    max-width: 600px;
+    max-width: 1200px;
+    /* Aumentei para caber lado a lado */
     margin: 0 auto;
 }
 
-/* Cabeçalho */
+/* --- 2. CABEÇALHO --- */
 header {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 header h1 {
@@ -44,30 +45,58 @@ header p {
     margin-top: 5px;
 }
 
-/* 2. ESTILOS ESPECIAIS (Meta, Recordista, Chat) */
+/* --- 3. SISTEMA DE GRID (O SEGREDO DO LAYOUT) --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Duas colunas iguais */
+    gap: 20px;
+    /* Espaço entre os cards */
+    align-items: start;
+}
+
+/* Linha do Topo (Destaques) */
+.top-row {
+    grid-column: 1 / -1;
+    /* Ocupa a largura toda */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* --- 4. ESTILOS VISUAIS (Cards, Cores, Etc) --- */
+.card,
+.meta-box,
+.destaque-dia {
+    background: #1e1e2e;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid #2d2d44;
+    height: 100%;
+    /* Para alinhar alturas */
+}
+
+/* Recordista */
 .destaque-dia {
     background: linear-gradient(45deg, #FFD700, #FFA500);
     color: #1a1a1a;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-    font-weight: bold;
     border: 2px solid #fff;
     animation: brilho 2s infinite alternate;
+    text-align: center;
+    margin-bottom: 0;
+    /* O grid controla o espaço agora */
 }
 
 .destaque-titulo {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
     opacity: 0.8;
 }
 
 .destaque-nome {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
 }
 
@@ -81,14 +110,7 @@ header p {
     }
 }
 
-.meta-box {
-    background: #1e1e2e;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    border: 1px solid #2d2d44;
-}
-
+/* Meta */
 .meta-texto {
     display: flex;
     justify-content: space-between;
@@ -101,7 +123,7 @@ header p {
     width: 100%;
     background-color: #333;
     border-radius: 10px;
-    height: 20px;
+    height: 15px;
     overflow: hidden;
 }
 
@@ -111,108 +133,33 @@ header p {
     background: linear-gradient(90deg, #00f260, #0575e6);
     border-radius: 10px;
     transition: width 1s ease-in-out;
-    box-shadow: 0 0 10px rgba(5, 117, 230, 0.5);
 }
 
-/* --- NOVO: ESTILO DO MURAL (CHAT) --- */
-.mural-container {
-    max-height: 350px;
-    /* Altura máxima da caixa de mensagens */
-    overflow-y: auto;
-    /* Barra de rolagem se encher */
+/* Títulos */
+h3 {
+    margin-bottom: 15px;
+    color: #ffffff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+/* Formulários */
+.form-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
-    padding-right: 5px;
-}
-
-/* Barra de rolagem estilizada */
-.mural-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.mural-container::-webkit-scrollbar-thumb {
-    background: #444;
-    border-radius: 3px;
-}
-
-.msg-card {
-    background: #2b2b3b;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border-left: 3px solid #9d4edd;
-    /* Roxo Neon */
-    animation: fadeIn 0.4s ease;
-}
-
-.msg-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-    color: #888;
-    margin-bottom: 4px;
-}
-
-.msg-autor {
-    color: #9d4edd;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.msg-texto {
-    color: #eee;
-    font-size: 0.95rem;
-    line-height: 1.4;
-    word-wrap: break-word;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 3. CARDS GERAIS */
-.card {
-    background: #1e1e2e;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    margin-bottom: 20px;
-    border: 1px solid #2d2d44;
-}
-
-h3 {
-    margin-bottom: 20px;
-    color: #ffffff;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
-    font-size: 1.2rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
 }
 
 select,
 input {
-    padding: 15px;
+    padding: 12px;
     background-color: #2b2b3b;
     border: 1px solid #444;
     border-radius: 8px;
     width: 100%;
-    font-size: 16px;
+    font-size: 15px;
     color: #fff;
     outline: none;
 }
@@ -220,16 +167,19 @@ input {
 select:focus,
 input:focus {
     border-color: #9d4edd;
-    box-shadow: 0 0 8px rgba(157, 78, 221, 0.3);
 }
 
-/* Botões */
-button {
+button.btn-registrar {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #7b2cbf, #9d4edd);
+    color: white;
     border: none;
     border-radius: 8px;
+    font-size: 16px;
     font-weight: bold;
-    cursor: pointer;
     text-transform: uppercase;
+    cursor: pointer;
     transition: transform 0.1s;
 }
 
@@ -237,22 +187,61 @@ button:active {
     transform: scale(0.98);
 }
 
-.btn-registrar {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(90deg, #7b2cbf, #9d4edd);
-    color: white;
-    font-size: 18px;
-    box-shadow: 0 4px 15px rgba(123, 44, 191, 0.3);
+/* Mural Chat */
+.mural-container {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-right: 5px;
+}
+
+.mural-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.mural-container::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+.msg-card {
+    background: #2b2b3b;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border-left: 3px solid #9d4edd;
+}
+
+.msg-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #888;
+    margin-bottom: 2px;
+}
+
+.msg-autor {
+    color: #9d4edd;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.msg-texto {
+    color: #eee;
+    font-size: 0.9rem;
+    word-wrap: break-word;
 }
 
 .btn-enviar-msg {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: #444;
     color: #ccc;
-    font-size: 14px;
-    margin-top: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 .btn-enviar-msg:hover {
@@ -260,27 +249,26 @@ button:active {
     color: white;
 }
 
-/* 4. TABELA */
+/* Tabela */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 5px;
 }
 
 th {
     text-align: left;
     color: #9d4edd;
-    padding: 10px;
+    padding: 8px;
     border-bottom: 2px solid #444;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
 }
 
 td {
-    padding: 12px 10px;
+    padding: 10px 8px;
     border-bottom: 1px solid #333;
     color: #ccc;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .posicao-1 td {
@@ -289,30 +277,24 @@ td {
     background-color: rgba(255, 215, 0, 0.05);
 }
 
-/* 5. MOBILE */
-@media (max-width: 600px) {
+/* --- 5. MOBILE (QUANDO A TELA FOR PEQUENA) --- */
+@media (max-width: 850px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Vira 1 coluna */
+    .top-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Destaques viram 1 coluna */
+
     body {
-        padding: 20px 10px;
+        padding: 10px;
     }
 
-    header h1 {
-        font-size: 1.8rem;
-    }
-
-    .card {
-        padding: 15px;
-    }
-
-    input,
-    select,
-    button.btn-registrar {
-        font-size: 16px;
-        padding: 12px;
-    }
-
-    th,
-    td {
-        padding: 10px 5px;
-        font-size: 0.9rem;
+    .container {
+        width: 100%;
     }
 }
