@@ -40,7 +40,7 @@
                     <div class="form-group">
                         <select id="atletaInput">
                             <option value="" disabled selected>Selecionar Atleta...</option>
-                            <option value="PJR">PJR</option>
+                            <option value="Pjr">Pjr</option>
                             <option value="PL">PL</option>
                             <option value="Saulo">Saulo</option>
                             <option value="Gustavo">Gustavo</option>
@@ -70,7 +70,6 @@
             </div>
 
             <div class="right-col">
-                
                 <div class="card" style="border: 2px solid #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);">
                     <h3>🏆 Ranking do Mês</h3>
                     <table id="tabelaRanking">
@@ -89,22 +88,20 @@
 
                 <div class="card">
                     <h3>📈 Evolução Mensal</h3>
-                    <div style="position: relative; height: 250px; width: 100%;">
+                    <div style="position: relative; height: 300px; width: 100%;">
                         <canvas id="graficoEvolucao"></canvas>
                     </div>
                 </div>
-
             </div>
 
-        </div> </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ==================================================================
-        // SUA CONFIGURAÇÃO
-        // ==================================================================
+        // SUA CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAQp-fQCt3y6K-TYhKqJUNPH1ZMmeqaJa4",
             authDomain: "info-run-ca27e.firebaseapp.com",
@@ -113,7 +110,6 @@
             messagingSenderId: "183190789446",
             appId: "1:183190789446:web:41470996258c4b8afb9947"
         };
-        // ==================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -132,7 +128,7 @@
             "Emuh": "#FF8C33", "Maumau": "#9d4edd", "Yago": "#ffffff"
         };
 
-        // 1. DADOS DE CORRIDAS
+        // 1. DADOS DE CORRIDAS (Correção para o Pjr)
         const q = query(collection(db, "corridas"), where("data", "==", mesAtual), orderBy("timestamp", "asc"));
         
         onSnapshot(q, (snapshot) => {
@@ -141,16 +137,19 @@
             let somaGrupo = 0;
             let melhorDoDia = { nome: "", km: 0 };
             let dadosDiarios = {};
-            const opcoesSelect = document.getElementById('atletaInput').options;
             
+            const opcoesSelect = document.getElementById('atletaInput').options;
             for (let i = 0; i < opcoesSelect.length; i++) {
                 if(opcoesSelect[i].value) dadosDiarios[opcoesSelect[i].value] = new Array(diaHojeNumero + 1).fill(0);
             }
 
             snapshot.forEach((documento) => {
                 const dados = documento.data();
-                if (!totais[dados.atleta]) totais[dados.atleta] = 0;
-                totais[dados.atleta] += dados.km;
+                // FIX: Remove espaços extras do nome (Ex: "Pjr " vira "Pjr")
+                const nomeAtleta = dados.atleta.trim();
+
+                if (!totais[nomeAtleta]) totais[nomeAtleta] = 0;
+                totais[nomeAtleta] += dados.km;
                 somaGrupo += dados.km;
 
                 if (dados.timestamp) {
@@ -159,10 +158,10 @@
                     const diaCorrida = dataObj.getDate();
 
                     if (dataCorrida === diaHojeString) {
-                        if (dados.km > melhorDoDia.km) melhorDoDia = { nome: dados.atleta, km: dados.km };
+                        if (dados.km > melhorDoDia.km) melhorDoDia = { nome: nomeAtleta, km: dados.km };
                     }
-                    if (diaCorrida <= diaHojeNumero && dadosDiarios[dados.atleta]) {
-                        dadosDiarios[dados.atleta][diaCorrida] += dados.km;
+                    if (diaCorrida <= diaHojeNumero && dadosDiarios[nomeAtleta]) {
+                        dadosDiarios[nomeAtleta][diaCorrida] += dados.km;
                     }
                 }
             });
@@ -220,12 +219,20 @@
             });
         });
 
-        // 3. EVENTOS
+        // 3. EVENTOS (Com alerta no Mural)
+        document.getElementById('inputMsg').addEventListener('focus', () => {
+            const atleta = document.getElementById('atletaInput').value;
+            if (!atleta) {
+                alert("⚠️ Selecione seu nome no 'Registrar' antes de digitar!");
+                document.getElementById('inputMsg').blur();
+                document.getElementById('atletaInput').focus();
+            }
+        });
+
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const atleta = document.getElementById('atletaInput').value;
             const texto = document.getElementById('inputMsg').value;
-            if (!atleta) { alert("Selecione seu nome lá em cima!"); return; }
-            if (!texto) return;
+            if (!atleta || !texto) return;
             try {
                 document.getElementById('btnEnviarMsg').innerText = "...";
                 await addDoc(collection(db, "mural"), { atleta, texto, timestamp: new Date() });
