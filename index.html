@@ -71,40 +71,45 @@
 
             <div class="right-col">
                 
-                <div class="card" style="border: 2px solid #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.2); overflow-x: auto;">
+                <div class="card" style="border: 2px solid #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);">
                     <h3>🏆 Ranking do Mês</h3>
-                    <table id="tabelaRanking">
-                        <thead>
-                            <tr>
-                                <th width="10%">Classificação</th>
-                                <th width="25%">Nome</th>
-                                <th>Distancias</th>
-                                <th style="text-align: center;">Atividades</th>
-                                <th>Média p/ Atv</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="5">Carregando...</td></tr>
-                        </tbody>
-                    </table>
+                    
+                    <div style="overflow-x: auto; width: 100%;"> 
+                        <table id="tabelaRanking" style="min-width: 400px;"> <thead>
+                                <tr>
+                                    <th width="10%">POS</th>
+                                    <th width="25%">NOME</th>
+                                    <th>DISTANCIAS</th>
+                                    <th style="text-align: center;">ATIVIDADES</th>
+                                    <th>MÉDIA P/ ATV</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5">Carregando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
 
                 <div class="card">
                     <h3>📈 Evolução Mensal</h3>
-                    <div style="position: relative; height: 300px; width: 100%;">
+                    <div style="position: relative; height: 250px; width: 100%;">
                         <canvas id="graficoEvolucao"></canvas>
                     </div>
                 </div>
+
             </div>
 
-        </div>
-    </div>
+        </div> </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // SUA CONFIGURAÇÃO DO FIREBASE
+        // ==================================================================
+        // SUA CONFIGURAÇÃO
+        // ==================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAQp-fQCt3y6K-TYhKqJUNPH1ZMmeqaJa4",
             authDomain: "info-run-ca27e.firebaseapp.com",
@@ -113,6 +118,7 @@
             messagingSenderId: "183190789446",
             appId: "1:183190789446:web:41470996258c4b8afb9947"
         };
+        // ==================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -137,7 +143,7 @@
         onSnapshot(q, (snapshot) => {
             const listaRanking = document.getElementById('tabelaRanking').querySelector('tbody');
             
-            // Agora 'stats' guarda KM total e CONTAGEM de corridas
+            // AGORA 'STATS' GUARDA KM E CONTAGEM
             let stats = {}; 
             let somaGrupo = 0;
             let melhorDoDia = { nome: "", km: 0 };
@@ -150,17 +156,18 @@
 
             snapshot.forEach((documento) => {
                 const dados = documento.data();
-                const nomeAtleta = dados.atleta.trim();
+                const nomeAtleta = dados.atleta.trim(); // Limpa espaços
 
-                // Lógica nova: Acumula KM e conta +1 atividade
+                // Lógica de Estatística (Soma KM e Conta +1 Atividade)
                 if (!stats[nomeAtleta]) {
                     stats[nomeAtleta] = { km: 0, count: 0 };
                 }
                 stats[nomeAtleta].km += dados.km;
-                stats[nomeAtleta].count += 1; // Mais uma corrida pra conta
+                stats[nomeAtleta].count += 1;
 
                 somaGrupo += dados.km;
 
+                // Lógica do Gráfico e Recordista
                 if (dados.timestamp) {
                     const dataObj = dados.timestamp.toDate();
                     const dataCorrida = dataObj.toDateString();
@@ -175,11 +182,12 @@
                 }
             });
 
-            // Atualiza Meta e Recordista
+            // Atualiza Meta
             const porcentagem = (somaGrupo / META_MENSAL) * 100;
             document.getElementById('barraProgresso').style.width = (porcentagem > 100 ? 100 : porcentagem) + "%";
             document.getElementById('txtMeta').innerText = `${somaGrupo.toFixed(1)} / ${META_MENSAL} km`;
 
+            // Atualiza Recordista
             const boxRecordista = document.getElementById('boxRecordista');
             if (melhorDoDia.km > 0) {
                 boxRecordista.style.display = "block";
@@ -189,9 +197,9 @@
                 boxRecordista.style.display = "none"; 
             }
 
-            // GERA O RANKING DETALHADO
+            // --- GERA O RANKING DETALHADO ---
             listaRanking.innerHTML = "";
-            // Ordena pelo KM total (b[1].km)
+            // Ordena por KM Total
             const rankingOrdenado = Object.entries(stats).sort((a, b) => b[1].km - a[1].km);
 
             if (rankingOrdenado.length === 0) {
@@ -203,7 +211,7 @@
                     
                     const totalKm = dadosAtleta.km.toFixed(2);
                     const atividades = dadosAtleta.count;
-                    // Calcula a média (evita divisão por zero)
+                    // Calcula Média (evita divisão por zero)
                     const media = atividades > 0 ? (dadosAtleta.km / atividades).toFixed(2) : "0.00";
 
                     let medalha = "";
