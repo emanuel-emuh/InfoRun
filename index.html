@@ -12,6 +12,7 @@
     <div class="container">
         <header>
             <h1>🏃 Info-Run</h1>
+            <p>Conectado ao Firebase 🔥</p>
         </header>
 
         <div class="dashboard-grid">
@@ -69,18 +70,21 @@
             </div>
 
             <div class="right-col">
-                <div class="card" style="border: 2px solid #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);">
+                
+                <div class="card" style="border: 2px solid #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.2); overflow-x: auto;">
                     <h3>🏆 Ranking do Mês</h3>
                     <table id="tabelaRanking">
                         <thead>
                             <tr>
-                                <th width="15%">Pos</th>
-                                <th>Atleta</th>
-                                <th width="30%">Total</th>
+                                <th width="10%">Classificação</th>
+                                <th width="25%">Nome</th>
+                                <th>Distancias</th>
+                                <th style="text-align: center;">Atividades</th>
+                                <th>Média p/ Atv</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td colspan="3">Carregando...</td></tr>
+                            <tr><td colspan="5">Carregando...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -127,12 +131,14 @@
             "Emuh": "#FF8C33", "Maumau": "#9d4edd", "Yago": "#ffffff"
         };
 
-        // 1. DADOS DE CORRIDAS (Correção para o Pjr)
+        // 1. DADOS DE CORRIDAS
         const q = query(collection(db, "corridas"), where("data", "==", mesAtual), orderBy("timestamp", "asc"));
         
         onSnapshot(q, (snapshot) => {
             const listaRanking = document.getElementById('tabelaRanking').querySelector('tbody');
-            let totais = {}; 
+            
+            // Agora 'stats' guarda KM total e CONTAGEM de corridas
+            let stats = {}; 
             let somaGrupo = 0;
             let melhorDoDia = { nome: "", km: 0 };
             let dadosDiarios = {};
@@ -144,11 +150,15 @@
 
             snapshot.forEach((documento) => {
                 const dados = documento.data();
-                // FIX: Remove espaços extras do nome (Ex: "Pjr " vira "Pjr")
                 const nomeAtleta = dados.atleta.trim();
 
-                if (!totais[nomeAtleta]) totais[nomeAtleta] = 0;
-                totais[nomeAtleta] += dados.km;
+                // Lógica nova: Acumula KM e conta +1 atividade
+                if (!stats[nomeAtleta]) {
+                    stats[nomeAtleta] = { km: 0, count: 0 };
+                }
+                stats[nomeAtleta].km += dados.km;
+                stats[nomeAtleta].count += 1; // Mais uma corrida pra conta
+
                 somaGrupo += dados.km;
 
                 if (dados.timestamp) {
@@ -165,7 +175,7 @@
                 }
             });
 
-            // Meta e Recordista
+            // Atualiza Meta e Recordista
             const porcentagem = (somaGrupo / META_MENSAL) * 100;
             document.getElementById('barraProgresso').style.width = (porcentagem > 100 ? 100 : porcentagem) + "%";
             document.getElementById('txtMeta').innerText = `${somaGrupo.toFixed(1)} / ${META_MENSAL} km`;
@@ -179,19 +189,40 @@
                 boxRecordista.style.display = "none"; 
             }
 
-            // Ranking
+            // GERA O RANKING DETALHADO
             listaRanking.innerHTML = "";
-            const rankingOrdenado = Object.entries(totais).sort((a, b) => b[1] - a[1]);
+            // Ordena pelo KM total (b[1].km)
+            const rankingOrdenado = Object.entries(stats).sort((a, b) => b[1].km - a[1].km);
 
             if (rankingOrdenado.length === 0) {
-                listaRanking.innerHTML = "<tr><td colspan='3' style='text-align:center'>Ninguém correu ainda 😴</td></tr>";
+                listaRanking.innerHTML = "<tr><td colspan='5' style='text-align:center'>Ninguém correu ainda 😴</td></tr>";
             } else {
                 rankingOrdenado.forEach((item, index) => {
                     const nome = item[0];
-                    const total = item[1].toFixed(2);
-                    const medalha = index === 0 ? "🥇 " : (index === 1 ? "🥈 " : (index === 2 ? "🥉 " : ""));
+                    const dadosAtleta = item[1];
+                    
+                    const totalKm = dadosAtleta.km.toFixed(2);
+                    const atividades = dadosAtleta.count;
+                    // Calcula a média (evita divisão por zero)
+                    const media = atividades > 0 ? (dadosAtleta.km / atividades).toFixed(2) : "0.00";
+
+                    let medalha = "";
+                    if(index === 0) medalha = "🥇";
+                    else if(index === 1) medalha = "🥈";
+                    else if(index === 2) medalha = "🥉";
+                    
                     const classe = index === 0 ? "posicao-1" : "";
-                    listaRanking.innerHTML += `<tr class="${classe}"><td>#${index + 1}</td><td>${medalha}${nome}</td><td>${total} km</td></tr>`;
+                    
+                    const linhaRanking = `
+                        <tr class="${classe}">
+                            <td>${medalha} ${index + 1}º</td>
+                            <td style="font-weight:bold;">${nome}</td>
+                            <td>${totalKm}</td>
+                            <td style="text-align: center;">${atividades}</td>
+                            <td>${media}</td>
+                        </tr>
+                    `;
+                    listaRanking.innerHTML += linhaRanking;
                 });
             }
             atualizarGrafico(dadosDiarios);
@@ -218,7 +249,7 @@
             });
         });
 
-        // 3. EVENTOS (Com alerta no Mural)
+        // 3. EVENTOS
         document.getElementById('inputMsg').addEventListener('focus', () => {
             const atleta = document.getElementById('atletaInput').value;
             if (!atleta) {
