@@ -1,5 +1,5 @@
 /* =========================================
-   INFO-RUN: DASHBOARD PRO (FINAL)
+   INFO-RUN: DASHBOARD RESPONSIVO (FINAL)
    ========================================= */
 
 /* --- 1. GERAL --- */
@@ -15,53 +15,58 @@ body {
     background-attachment: fixed;
     color: #e0e0e0;
     min-height: 100vh;
-    padding: 40px;
-    /* Mais espaço nas bordas */
+    padding: 20px;
 }
 
 .container {
     width: 100%;
-    max-width: 1300px;
-    /* Largura total maior */
+    max-width: 1200px;
     margin: 0 auto;
 }
 
 /* --- 2. CABEÇALHO --- */
 header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 header h1 {
     color: #fff;
-    font-size: 3rem;
+    font-size: 2.5rem;
     text-shadow: 0 0 15px rgba(123, 44, 191, 0.6);
     margin-bottom: 5px;
 }
 
 header p {
     color: #b3b3b3;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
-/* --- 3. GRID DO DASHBOARD (Layout Inteligente) --- */
+/* --- 3. DASHBOARD GRID (LAYOUT INTELIGENTE) --- */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* Duas colunas iguais */
-    gap: 30px;
-    /* Espaço generoso entre colunas */
+    /* Duas colunas no PC */
+    gap: 25px;
+    /* Espaço padrão entre tudo */
     align-items: start;
 }
 
-/* Linha do Topo (Recordista e Meta) */
 .top-row {
     grid-column: 1 / -1;
-    /* Ocupa toda a largura */
+    /* Ocupa a largura toda */
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: 25px;
+}
+
+/* Colunas Verticais (Para empilhar cards com espaço igual) */
+.left-col,
+.right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    /* O segredo: Espaço igual entre cards verticais */
 }
 
 /* --- 4. CARDS E CAIXAS --- */
@@ -69,33 +74,24 @@ header p {
 .meta-box,
 .destaque-dia {
     background: #1e1e2e;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     border: 1px solid #2d2d44;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-bottom: 30px;
-    /* Garante que um card não encoste no de baixo */
-}
-
-/* Remove a margem do último card para ficar alinhado */
-.left-col .card:last-child,
-.right-col .card:last-child {
-    margin-bottom: 0;
+    width: 100%;
+    /* Garante que não ultrapasse a largura */
 }
 
 h3 {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: #ffffff;
     border-bottom: 2px solid #333;
-    padding-bottom: 12px;
-    font-size: 1.3rem;
+    padding-bottom: 10px;
+    font-size: 1.2rem;
     font-weight: 600;
 }
 
-/* --- 5. FUNCIONALIDADES ESPECIAIS --- */
+/* --- 5. FUNCIONALIDADES --- */
 
 /* Recordista */
 .destaque-dia {
@@ -104,8 +100,6 @@ h3 {
     border: 2px solid #fff;
     animation: brilho 3s infinite alternate;
     text-align: center;
-    margin-bottom: 0;
-    /* O Grid controla o espaço */
 }
 
 .destaque-titulo {
@@ -117,7 +111,7 @@ h3 {
 }
 
 .destaque-nome {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 900;
 }
 
@@ -132,24 +126,20 @@ h3 {
 }
 
 /* Meta */
-.meta-box {
-    margin-bottom: 0;
-}
-
-/* O Grid controla o espaço */
 .meta-texto {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
     color: #ccc;
     font-weight: 500;
+    font-size: 0.9rem;
 }
 
 .progress-container {
     width: 100%;
     background-color: #333;
-    border-radius: 12px;
-    height: 20px;
+    border-radius: 10px;
+    height: 18px;
     overflow: hidden;
 }
 
@@ -157,59 +147,51 @@ h3 {
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, #00f260, #0575e6);
-    border-radius: 12px;
     transition: width 1s ease-in-out;
 }
 
-/* --- 6. FORMULÁRIOS --- */
+/* Formulários */
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 select,
 input {
-    padding: 15px;
+    padding: 12px;
     background-color: #2b2b3b;
     border: 1px solid #444;
-    border-radius: 10px;
+    border-radius: 8px;
     width: 100%;
     font-size: 16px;
     color: #fff;
     outline: none;
-    transition: 0.3s;
 }
 
 select:focus,
 input:focus {
     border-color: #9d4edd;
-    transform: translateY(-2px);
 }
 
 button.btn-registrar {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     background: linear-gradient(90deg, #7b2cbf, #9d4edd);
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 18px;
+    border-radius: 8px;
+    font-size: 16px;
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
-    transition: transform 0.2s;
 }
 
-button.btn-registrar:hover {
-    transform: translateY(-3px);
-}
-
-/* --- 7. MURAL (Chat) --- */
+/* Chat */
 .mural-container {
-    max-height: 350px;
+    max-height: 300px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -218,20 +200,11 @@ button.btn-registrar:hover {
     padding-right: 5px;
 }
 
-.mural-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.mural-container::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 3px;
-}
-
 .msg-card {
     background: #2b2b3b;
-    padding: 12px 15px;
+    padding: 10px;
     border-radius: 8px;
-    border-left: 4px solid #9d4edd;
+    border-left: 3px solid #9d4edd;
 }
 
 .msg-header {
@@ -239,59 +212,63 @@ button.btn-registrar:hover {
     justify-content: space-between;
     font-size: 0.75rem;
     color: #888;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 .msg-autor {
     color: #9d4edd;
     font-weight: bold;
-    font-size: 0.95rem;
 }
 
 .msg-texto {
     color: #eee;
-    font-size: 1rem;
-    line-height: 1.4;
+    font-size: 0.95rem;
+    line-height: 1.3;
     word-wrap: break-word;
 }
 
 .btn-enviar-msg {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: #444;
     color: #ccc;
     border: none;
-    border-radius: 8px;
-    font-weight: bold;
+    border-radius: 6px;
     cursor: pointer;
-    margin-top: 10px;
+    font-weight: bold;
 }
 
-.btn-enviar-msg:hover {
-    background: #555;
-    color: white;
+/* --- 6. TABELA (CORREÇÃO DE OVERFLOW) --- */
+/* Isso impede que a tabela quebre o site no celular */
+.table-wrapper {
+    overflow-x: auto;
+    /* Cria rolagem horizontal se necessário */
+    width: 100%;
 }
 
-/* --- 8. TABELA --- */
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 400px;
+    /* Garante largura mínima legível */
 }
 
 th {
     text-align: left;
     color: #9d4edd;
-    padding: 12px 10px;
+    padding: 10px;
     border-bottom: 2px solid #444;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 td {
-    padding: 15px 10px;
+    padding: 12px 10px;
     border-bottom: 1px solid #333;
     color: #ccc;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
 }
 
 .posicao-1 td {
@@ -300,32 +277,36 @@ td {
     background-color: rgba(255, 215, 0, 0.05);
 }
 
-/* --- 9. MOBILE (Celular) --- */
-@media (max-width: 900px) {
+/* --- 7. MOBILE RESPONSIVO --- */
+@media (max-width: 850px) {
     body {
-        padding: 15px;
+        padding: 10px;
     }
 
-    .container {
-        width: 100%;
-    }
-
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
+    /* Tudo vira uma coluna só */
+    .dashboard-grid,
     .top-row {
         grid-template-columns: 1fr;
         gap: 20px;
     }
 
+    .left-col,
+    .right-col {
+        gap: 20px;
+    }
+
     header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
     .card {
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 15px;
+    }
+
+    /* Ajuste de fonte para caber melhor */
+    td,
+    th {
+        font-size: 0.85rem;
+        padding: 8px;
     }
 }
